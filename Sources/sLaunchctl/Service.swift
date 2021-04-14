@@ -3,6 +3,19 @@ import Foundation
 
 extension launchctl {
     public struct Service {
+        public struct Info {
+            public enum Status {
+                /// Last exit status.
+                case exitCode(Int)
+                
+                /// Signal number killed the job.
+                case signal(Int32)
+            }
+            
+            public let pid: pid_t?
+            public let status: Status
+        }
+        
         public var name: String
         public var domainTarget: DomainTarget
         public var serviceTarget: String { "\(domainTarget)/\(name)" }
@@ -44,6 +57,11 @@ extension launchctl {
         /// Dumps the service's definition, properties & metadata.
         public func print() throws -> String {
             try runLaunchctl(["print", serviceTarget])
+        }
+        
+        /// Dumps the service's state.
+        public func info() throws -> Info {
+            fatalError()
         }
     }
 }
