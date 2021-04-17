@@ -1,14 +1,14 @@
 import Foundation
 
 
-public extension launchctl {
+public extension Launchctl {
     static let errorDomain = "LaunchctlErrorDomain"
 }
 
 extension NSError {
     convenience init(launchctlExitCode: Int32, stderr: String) {
         self.init(
-            domain: launchctl.errorDomain,
+            domain: Launchctl.errorDomain,
             code: Int(launchctlExitCode),
             userInfo: [
                 NSDebugDescriptionErrorKey: Self.xpc_strerr(launchctlExitCode),

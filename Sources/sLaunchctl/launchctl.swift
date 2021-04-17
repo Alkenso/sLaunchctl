@@ -1,18 +1,23 @@
 import Foundation
 
 
-public extension launchctl {
-    static var system: launchctl { .init(domainTarget: .system) }
-    static func gui(_ uid: uid_t = getuid()) -> launchctl { .init(domainTarget: .gui(uid)) }
+public extension Launchctl {
+    /// Launchctl instance for system domain target.
+    static var system: Launchctl { .init(domainTarget: .system) }
+    
+    /// Launchctl instance for gui domain target.
+    static func gui(_ uid: uid_t = getuid()) -> Launchctl { .init(domainTarget: .gui(uid)) }
 }
 
-public struct launchctl {
+public struct Launchctl {
     public let domainTarget: DomainTarget
     
     public init(domainTarget: DomainTarget) {
         self.domainTarget = domainTarget
     }
     
+    /// Loads specified service(s).
+    /// File can be plist, XPC bundle, or directory of them. Each plist or bundle is loaded into the specified domain.
     @discardableResult
     public func bootstrap(_ file: URL) throws -> Service {
         try runLaunchctl(["bootstrap", domainTarget.description, file.path])
@@ -24,6 +29,7 @@ public struct launchctl {
         return Service(name: name, domainTarget: domainTarget)
     }
     
+    /// Unloads the specified service(s).
     public func bootout(_ file: URL) throws {
         try runLaunchctl(["bootout", domainTarget.description, file.path])
     }
@@ -57,7 +63,7 @@ public struct launchctl {
     }
 }
 
-public extension launchctl {
+public extension Launchctl {
     enum DomainTarget {
         case system
         case gui(uid_t)
@@ -70,7 +76,7 @@ public extension launchctl {
     }
 }
 
-extension launchctl.DomainTarget: CustomStringConvertible {
+extension Launchctl.DomainTarget: CustomStringConvertible {
     public var description: String {
         switch self {
         case .system:

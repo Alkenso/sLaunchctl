@@ -1,10 +1,15 @@
 import Foundation
 
 
-extension launchctl {
+extension Launchctl {
     public struct Service {
+        /// Service name
         public var name: String
+        
+        /// Service domain target.
         public var domainTarget: DomainTarget
+        
+        /// Service target (consists of domain and name).
         public var serviceTarget: String { "\(domainTarget)/\(name)" }
         
         public init(name: String, domainTarget: DomainTarget) {
@@ -12,22 +17,25 @@ extension launchctl {
             self.domainTarget = domainTarget
         }
         
-        public func bootout(_ serviceName: String) throws {
+        /// Unloads the service.
+        public func bootout() throws {
             try runLaunchctl(["bootout", serviceTarget])
         }
         
-        public func enable(_ serviceName: String) throws {
+        /// Enables the service.
+        public func enable() throws {
             try runLaunchctl(["enable", serviceTarget])
         }
         
-        public func disable(_ serviceName: String) throws {
+        /// Disables the service.
+        public func disable() throws {
             try runLaunchctl(["disable", serviceTarget])
         }
         
         /// Force a service to start.
         /// - Parameters:
-        ///     - kill: 'true' will kill then restart existing instances.
-        public func kickstart(kill: Bool) throws {
+        ///     - kill: 'true' will kill existing instances before starting.
+        public func kickstart(kill: Bool = false) throws {
             var args = ["kickstart"]
             if kill {
                 args.append("-k")
