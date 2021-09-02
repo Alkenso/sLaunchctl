@@ -1,6 +1,7 @@
 import SwiftConvenience
 
 import Foundation
+import SystemConfiguration
 
 
 @discardableResult
@@ -14,4 +15,11 @@ func runLaunchctl(_ args: [String]) throws -> String {
     }
     
     return stdout
+}
+
+func loggedInUser() -> uid_t? {
+    var uid: uid_t = 0
+    var gid: gid_t = 0
+    let found = SCDynamicStoreCopyConsoleUser(nil, &uid, &gid) != nil
+    return found ? uid : nil
 }

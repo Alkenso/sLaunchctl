@@ -6,7 +6,10 @@ public extension Launchctl {
     static var system: Launchctl { .init(domainTarget: .system) }
     
     /// Launchctl instance for gui domain target.
-    static func gui(_ uid: uid_t = getuid()) -> Launchctl { .init(domainTarget: .gui(uid)) }
+    static func gui(_ uid: uid_t) -> Launchctl { .init(domainTarget: .gui(uid)) }
+    
+    /// Launchctl instance for gui domain target of currently logged in user.
+    static func gui() -> Launchctl? { loggedInUser().flatMap(Launchctl.gui(_:)) }
 }
 
 public struct Launchctl {
@@ -16,12 +19,11 @@ public struct Launchctl {
         self.domainTarget = domainTarget
     }
     
-    /// Loads specified service(s).
-    /// File can be plist, XPC bundle, or directory of them. Each plist or bundle is loaded into the specified domain.
+    /// Loads the specified service.
     @discardableResult
-    public func bootstrap(_ file: URL) throws -> Service {
-        try runLaunchctl(["bootstrap", domainTarget.description, file.path])
-        guard let name = NSDictionary(contentsOf: file)?
+    public func bootstrap(plist: URL) throws -> Service {
+        try runLaunchctl(["bootstrap", domainTarget.description, plist.path])
+        guard let name = NSDictionary(contentsOf: plist)?
                 .object(forKey: LAUNCH_JOBKEY_LABEL) as? String
         else {
             throw NSError(launchctlExitCode: EINVAL, stderr: "Provided file does not contain service label.")
@@ -29,14 +31,20 @@ public struct Launchctl {
         return Service(name: name, domainTarget: domainTarget)
     }
     
-    /// Unloads the specified service(s).
-    public func bootout(_ file: URL) throws {
-        try runLaunchctl(["bootout", domainTarget.description, file.path])
+    /// Unloads the specified service.
+    public func bootout(plist: URL) throws {
+        try runLaunchctl(["bootout", domainTarget.description, plist.path])
+    }
+    
+    /// Unloads the specified service.
+    public func bootout(label: String) throws {
+        let serviceTarget = Service(name: label, domainTarget: domainTarget).serviceTarget
+        try runLaunchctl(["bootout", serviceTarget])
     }
     
     /// Lists all services loaded into launchd for the current domain target.
     public func list() throws -> [Service] {
-        let output = try runLaunchctl(["print", "system"])
+        let output = try runLaunchctl(["print", domainTarget.description])
         
         let regex = try NSRegularExpression(pattern: "(?:\n[\\s\t]*services = \\{)((?:\n.*?)*?)[\t\\s]*\\}")
         let nsString = output as NSString
@@ -67,12 +75,12 @@ public extension Launchctl {
     enum DomainTarget {
         case system
         case gui(uid_t)
+        
+        // Rare use
         case pid(pid_t)
         case user(uid_t)
-        
-// Commented due to future support
-//        case login(au_asid_t)
-//        case session(au_asid_t)
+        case login(au_asid_t)
+        case session(au_asid_t)
     }
 }
 
@@ -87,6 +95,10 @@ extension Launchctl.DomainTarget: CustomStringConvertible {
             return "pid/\(pid)"
         case .user(let uid):
             return "user/\(uid)"
+        case .login(let asid):
+            return "login/\(asid)"
+        case .session(let asid):
+            return "session/\(asid)"
         }
     }
 }
