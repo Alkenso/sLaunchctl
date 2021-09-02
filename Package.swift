@@ -12,7 +12,7 @@ let package = Package(
             targets: ["sLaunchctl"]),
     ],
     dependencies: [
-         .package(url: "https://github.com/Alkenso/SwiftConvenience.git", from: "0.0.1"),
+         .package(url: "https://github.com/Alkenso/SwiftConvenience.git", from: "0.0.3"),
     ],
     targets: [
         .target(
