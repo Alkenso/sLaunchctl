@@ -23,3 +23,22 @@ func loggedInUser() -> uid_t? {
     let found = SCDynamicStoreCopyConsoleUser(nil, &uid, &gid) != nil
     return found ? uid : nil
 }
+
+extension String {
+    // supports one and only one capture group
+    func launchctlFindValue(pattern: String) throws -> String {
+        let regex = try NSRegularExpression(pattern: pattern)
+        let nsString = self as NSString
+        guard let result = regex.firstMatch(in: self, range: NSRange(location: 0, length: nsString.length)),
+              result.numberOfRanges == 2
+        else {
+            throw CommonError.notFound(what: "regex group value", value: pattern, where: self)
+        }
+        
+        return nsString.substring(with: result.range(at: 1)) as String
+    }
+    
+    func launchctlFindValue(forKey key: String) throws -> String {
+        try launchctlFindValue(pattern: "\(key) = (.*)")
+    }
+}

@@ -1,5 +1,5 @@
 import Foundation
-
+import SwiftConvenience
 
 extension Launchctl {
     public struct Service {
@@ -50,8 +50,43 @@ extension Launchctl {
         }
         
         /// Dumps the service's definition, properties & metadata.
-        public func print() throws -> String {
-            try runLaunchctl(["print", serviceTarget])
+        public func print() throws -> ServiceInfo {
+            let raw = try runLaunchctl(["print", serviceTarget])
+            return try ServiceInfo(
+                pid: (try? raw.launchctlFindValue(forKey: "pid")).flatMap(pid_t.init),
+                plistPath: raw.launchctlFindValue(forKey: "path"),
+                program: raw.launchctlFindValue(forKey: "program"),
+                bundleID: (try? raw.launchctlFindValue(forKey: "bundle id")),
+                lastExitReason: .init(raw: raw),
+                raw: raw
+            )
+        }
+    }
+    
+    public struct ServiceInfo: Equatable, Codable {
+        public var pid: pid_t?
+        public var plistPath: String
+        public var program: String
+        public var bundleID: String?
+        public var lastExitReason: ExitReason?
+        
+        public var raw: String
+    }
+    
+    public enum ExitReason: Equatable, Codable {
+        case signal(Int32)
+        case exitCode(Int32)
+    }
+}
+
+private extension Launchctl.ExitReason {
+    init?(raw: String) {
+        if let signal = (try? raw.launchctlFindValue(pattern: "last terminating signal = .*: (.*)")).flatMap(Int32.init) {
+            self = .signal(signal)
+        } else if let code = (try? raw.launchctlFindValue(forKey: "last exit code")).flatMap(Int32.init) {
+            self = .exitCode(code)
+        } else {
+            return nil
         }
     }
 }
