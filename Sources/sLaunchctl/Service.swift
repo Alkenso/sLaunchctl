@@ -49,17 +49,21 @@ extension Launchctl {
             try runLaunchctl(["kill", String(signum), serviceTarget])
         }
         
-        /// Dumps the service's definition, properties & metadata.
-        public func print() throws -> ServiceInfo {
-            let raw = try runLaunchctl(["print", serviceTarget])
+        /// Dumps the service's definition, properties & metadata. in structured way.
+        public func info() throws -> ServiceInfo {
+            let raw = try print()
             return try ServiceInfo(
                 pid: (try? raw.launchctlFindValue(forKey: "pid")).flatMap(pid_t.init),
                 plistPath: raw.launchctlFindValue(forKey: "path"),
                 program: raw.launchctlFindValue(forKey: "program"),
                 bundleID: try? raw.launchctlFindValue(forKey: "bundle id"),
-                lastExitReason: .init(raw: raw),
-                raw: raw
+                lastExitReason: .init(raw: raw)
             )
+        }
+        
+        /// Dumps the service's definition, properties & metadata.
+        public func print() throws -> String {
+            try runLaunchctl(["print", domainTarget.description])
         }
     }
     
@@ -69,8 +73,6 @@ extension Launchctl {
         public var program: String
         public var bundleID: String?
         public var lastExitReason: ExitReason?
-        
-        public var raw: String
     }
     
     public enum ExitReason: Equatable, Codable {
