@@ -9,14 +9,16 @@ let package = Package(
     products: [
         .library(
             name: "sLaunchctl",
-            targets: ["sLaunchctl"]),
+            targets: ["sLaunchctl"]
+        ),
     ],
     dependencies: [
-         .package(url: "https://github.com/Alkenso/SwiftConvenience.git", from: "0.0.3"),
+        .package(url: "https://github.com/Alkenso/SwiftConvenience.git", from: "0.0.15"),
     ],
     targets: [
         .target(
             name: "sLaunchctl",
-            dependencies: ["SwiftConvenience"]),
+            dependencies: ["SwiftConvenience"]
+        ),
     ]
 )

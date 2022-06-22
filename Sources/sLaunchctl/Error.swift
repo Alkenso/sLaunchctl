@@ -1,8 +1,7 @@
 import Foundation
 
-
-public extension Launchctl {
-    static let errorDomain = "LaunchctlErrorDomain"
+extension Launchctl {
+    public static let errorDomain = "LaunchctlErrorDomain"
 }
 
 extension NSError {
@@ -12,12 +11,12 @@ extension NSError {
             code: Int(launchctlExitCode),
             userInfo: [
                 NSDebugDescriptionErrorKey: Self.xpc_strerr(launchctlExitCode),
-                "stderr": stderr
+                "stderr": stderr,
             ]
         )
     }
     
-    static private func xpc_strerr(_ code: Int32) -> String {
+    private static func xpc_strerr(_ code: Int32) -> String {
         switch code {
         case 0..<107:
             return String(cString: strerror(code))

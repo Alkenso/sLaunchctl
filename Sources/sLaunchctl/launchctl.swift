@@ -1,15 +1,14 @@
 import Foundation
 
-
-public extension Launchctl {
+extension Launchctl {
     /// Launchctl instance for system domain target.
-    static var system: Launchctl { .init(domainTarget: .system) }
+    public static var system: Launchctl { .init(domainTarget: .system) }
     
     /// Launchctl instance for gui domain target.
-    static func gui(_ uid: uid_t) -> Launchctl { .init(domainTarget: .gui(uid)) }
+    public static func gui(_ uid: uid_t) -> Launchctl { .init(domainTarget: .gui(uid)) }
     
     /// Launchctl instance for gui domain target of currently logged in user.
-    static func gui() -> Launchctl? { loggedInUser().flatMap(Launchctl.gui(_:)) }
+    public static func gui() -> Launchctl? { loggedInUser().flatMap(Launchctl.gui(_:)) }
 }
 
 public struct Launchctl {
@@ -24,7 +23,7 @@ public struct Launchctl {
     public func bootstrap(plist: URL) throws -> Service {
         try runLaunchctl(["bootstrap", domainTarget.description, plist.path])
         guard let name = NSDictionary(contentsOf: plist)?
-                .object(forKey: LAUNCH_JOBKEY_LABEL) as? String
+            .object(forKey: LAUNCH_JOBKEY_LABEL) as? String
         else {
             throw NSError(launchctlExitCode: EINVAL, stderr: "Provided file does not contain service label.")
         }
@@ -71,8 +70,8 @@ public struct Launchctl {
     }
 }
 
-public extension Launchctl {
-    enum DomainTarget {
+extension Launchctl {
+    public enum DomainTarget {
         case system
         case gui(uid_t)
         

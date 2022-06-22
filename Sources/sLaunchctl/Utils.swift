@@ -3,7 +3,6 @@ import SwiftConvenience
 import Foundation
 import SystemConfiguration
 
-
 @discardableResult
 func runLaunchctl(_ args: [String]) throws -> String {
     let (exitCode, stdout, stderr) = Process.launch(

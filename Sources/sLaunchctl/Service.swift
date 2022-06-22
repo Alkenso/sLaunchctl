@@ -56,7 +56,7 @@ extension Launchctl {
                 pid: (try? raw.launchctlFindValue(forKey: "pid")).flatMap(pid_t.init),
                 plistPath: raw.launchctlFindValue(forKey: "path"),
                 program: raw.launchctlFindValue(forKey: "program"),
-                bundleID: (try? raw.launchctlFindValue(forKey: "bundle id")),
+                bundleID: try? raw.launchctlFindValue(forKey: "bundle id"),
                 lastExitReason: .init(raw: raw),
                 raw: raw
             )
