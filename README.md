@@ -15,20 +15,20 @@ You can also find Swift libraries for macOS / *OS development
 
 #### Bootstrap
 ```
-try launchctl.system.bootstrap(URL(fileURLWithPath: "/path/to/com.my.daemon.plist"))
-try launchctl.gui().bootstrap(URL(fileURLWithPath: "/path/to/com.my.user_agent.plist"))
+try Launchctl.system.bootstrap(URL(fileURLWithPath: "/path/to/com.my.daemon.plist"))
+try Launchctl.gui().bootstrap(URL(fileURLWithPath: "/path/to/com.my.user_agent.plist"))
 ```
 
 #### Bootout daemon
 ```
-try launchctl.system.bootout(URL(fileURLWithPath: "/path/to/com.my.daemon.plist"))
-try launchctl.gui().bootout(URL(fileURLWithPath: "/path/to/com.my.user_agent.plist"))
+try Launchctl.system.bootout(URL(fileURLWithPath: "/path/to/com.my.daemon.plist"))
+try Launchctl.gui().bootout(URL(fileURLWithPath: "/path/to/com.my.user_agent.plist"))
 ```
 
 #### List all daemons
 ```
-let rootDaemons = try launchctl.system.list()
-let user505Agents = try launchctl.gui(505).list()
+let rootDaemons = try Launchctl.system.list()
+let user505Agents = try Launchctl.gui(505).list()
 ```
 
-#### Rest functionas is inside sLaunchctl!
+#### Find many more functional inside sLaunchctl!
