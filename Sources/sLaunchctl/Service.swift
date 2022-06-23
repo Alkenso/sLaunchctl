@@ -63,7 +63,7 @@ extension Launchctl {
         
         /// Dumps the service's definition, properties & metadata.
         public func print() throws -> String {
-            try runLaunchctl(["print", domainTarget.description])
+            try runLaunchctl(["print", serviceTarget])
         }
     }
     
