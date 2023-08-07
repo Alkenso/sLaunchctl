@@ -5,6 +5,8 @@ Unfortunately, Apple does not provide any actual API. (Existing SMJobXxx is depr
 
 sLaunchctl fills this gap providing convenient API that wraps up launchctl tool.
 
+Read the article dedicated to the package: [sLaunchctl — Swift API to manage Daemons and Agents](https://medium.com/@alkenso/slaunchctl-swift-api-to-manage-daemons-and-agents-eea357f04782)
+
 ### Library family
 You can also find Swift libraries for macOS / *OS development
 - [SwiftConvenience](https://github.com/Alkenso/SwiftConvenience): Swift common extensions and utilities used in everyday development
