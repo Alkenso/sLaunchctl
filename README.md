@@ -10,6 +10,7 @@ You can also find Swift libraries for macOS / *OS development
 - [SwiftConvenience](https://github.com/Alkenso/SwiftConvenience): Swift common extensions and utilities used in everyday development
 - [sXPC](https://github.com/Alkenso/sXPC): Swift type-safe wrapper around NSXPCConnection and proxy object
 - [sMock](https://github.com/Alkenso/sMock): Swift unit-test mocking framework similar to gtest/gmock
+- [sEndpontSecurity](https://github.com/Alkenso/sEndpointSecurity): Swift wrapper around EndpointSecurity.framework
 
 ## Examples
 
