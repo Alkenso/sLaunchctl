@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "sLaunchctl",
-    platforms: [.macOS(.v10_10)],
+    platforms: [.macOS(.v10_13)],
     products: [
         .library(
             name: "sLaunchctl",
@@ -13,12 +13,16 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Alkenso/SwiftConvenience.git", from: "0.0.17"),
+        .package(url: "https://github.com/Alkenso/SwiftConvenience.git", from: "0.0.25"),
     ],
     targets: [
         .target(
             name: "sLaunchctl",
             dependencies: ["SwiftConvenience"]
+        ),
+        .testTarget(
+            name: "sLaunchctlTests",
+            dependencies: ["sLaunchctl"]
         ),
     ]
 )

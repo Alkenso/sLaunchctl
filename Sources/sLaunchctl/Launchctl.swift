@@ -1,4 +1,27 @@
+//  MIT License
+//
+//  Copyright (c) 2022 Alkenso (Vladimir Vashurkin)
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all
+//  copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//  SOFTWARE.
+
 import Foundation
+import SwiftConvenience
 
 extension Launchctl {
     /// Launchctl instance for system domain target.
@@ -8,7 +31,11 @@ extension Launchctl {
     public static func gui(_ uid: uid_t) -> Launchctl { .init(domainTarget: .gui(uid)) }
     
     /// Launchctl instance for gui domain target of currently logged in user.
-    public static func gui() -> Launchctl? { loggedInUser().flatMap(Launchctl.gui(_:)) }
+    public static func gui() -> Launchctl? { UnixUser.currentSession.flatMap { .gui($0.uid) } }
+}
+
+extension Launchctl {
+    public static let errorDomain = "LaunchctlErrorDomain"
 }
 
 public struct Launchctl {
@@ -43,25 +70,13 @@ public struct Launchctl {
     
     /// Lists all services loaded into launchd for the current domain target.
     public func list() throws -> [Service] {
-        let output = try runLaunchctl(["print", domainTarget.description])
-        
-        let regex = try NSRegularExpression(pattern: "(?:\n[\\s\t]*services = \\{)((?:\n.*?)*?)[\t\\s]*\\}")
-        let nsString = output as NSString
-        let results = regex.matches(
-            in: output,
-            range: NSRange(location: 0, length: nsString.length)
-        )
-        
-        guard results.count == 1, results[0].numberOfRanges == 2 else {
-            throw NSError(launchctlExitCode: ENOATTR, stderr: "No services dict found.")
+        let output = try print()
+        do {
+            let names = try OutputParser(string: output).services()
+            return names.map { Service(name: $0, domainTarget: domainTarget) }
+        } catch {
+            throw NSError(launchctlExitCode: ENOATTR, stderr: "No services dict found.", underlyingError: error)
         }
-        
-        let services = nsString.substring(with: results[0].range(at: 1))
-        return services.components(separatedBy: .newlines)
-            .map { $0.components(separatedBy: .whitespaces) }
-            .compactMap(\.last)
-            .filter { !$0.isEmpty }
-            .map { Service(name: String($0), domainTarget: domainTarget) }
     }
     
     /// Prints the domain's metadata, including but not limited to all services in the domain.
@@ -72,7 +87,10 @@ public struct Launchctl {
 
 extension Launchctl {
     public enum DomainTarget {
+        /// `system` domain target usually used by system-wide daemons, privileged helpers, system extensions.
         case system
+        
+        /// `gui` domain target usually used by per-user agents and login items.
         case gui(uid_t)
         
         // Rare use
@@ -99,5 +117,15 @@ extension Launchctl.DomainTarget: CustomStringConvertible {
         case .session(let asid):
             return "session/\(asid)"
         }
+    }
+}
+
+extension OutputParser {
+    internal func services() throws -> [String] {
+        let lines = try stringArray(forKey: "services")
+        return lines
+            .map { $0.components(separatedBy: .whitespaces) }
+            .compactMap(\.last)
+            .filter { !$0.isEmpty }
     }
 }
