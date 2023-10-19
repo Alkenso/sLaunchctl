@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 import Foundation
-import SwiftConvenience
+import SpellbookFoundation
 import SystemConfiguration
 
 @discardableResult

@@ -1,5 +1,6 @@
 @testable import sLaunchctl
 
+import SpellbookFoundation
 import XCTest
 
 class ServiceParsingTests: XCTestCase {

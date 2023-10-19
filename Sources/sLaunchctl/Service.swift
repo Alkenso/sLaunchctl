@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 import Foundation
-import SwiftConvenience
+import SpellbookFoundation
 
 extension Launchctl {
     public struct Service {

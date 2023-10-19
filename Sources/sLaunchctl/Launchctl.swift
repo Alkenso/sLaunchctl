@@ -21,7 +21,7 @@
 //  SOFTWARE.
 
 import Foundation
-import SwiftConvenience
+import SpellbookFoundation
 
 extension Launchctl {
     /// Launchctl instance for system domain target.

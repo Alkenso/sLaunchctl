@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -13,16 +13,19 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Alkenso/SwiftConvenience.git", from: "0.0.25"),
+        .package(url: "https://github.com/Alkenso/SwiftSpellbook.git", exact: "0.3.0"),
     ],
     targets: [
         .target(
             name: "sLaunchctl",
-            dependencies: ["SwiftConvenience"]
+            dependencies: [.product(name: "SpellbookFoundation", package: "SwiftSpellbook")]
         ),
         .testTarget(
             name: "sLaunchctlTests",
-            dependencies: ["sLaunchctl"]
+            dependencies: [
+                "sLaunchctl",
+                .product(name: "SpellbookFoundation", package: "SwiftSpellbook"),
+            ]
         ),
     ]
 )
