@@ -13,7 +13,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/Alkenso/SwiftSpellbook.git", exact: "0.3.0"),
+        .package(url: "https://github.com/Alkenso/SwiftSpellbook.git", from: "0.3.1"),
     ],
     targets: [
         .target(
