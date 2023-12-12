@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "sLaunchctl",
-    platforms: [.macOS(.v10_13)],
+    platforms: [.macOS(.v10_15)],
     products: [
         .library(
             name: "sLaunchctl",
