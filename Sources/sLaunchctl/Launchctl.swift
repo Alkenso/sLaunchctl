@@ -22,6 +22,7 @@
 
 import Foundation
 import SpellbookFoundation
+import Spellbook_macOS
 
 extension Launchctl {
     /// Launchctl instance for system domain target.
