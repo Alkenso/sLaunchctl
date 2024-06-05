@@ -1,3 +1,5 @@
+The package now is part of [SwiftSpellbook_macOS](https://github.com/Alkenso/SwiftSpellbook_macOS)
+
 # sLaunchctl - Swift API to manage daemons and user-agents
 
 Developing for macOS often assumes interaction with root daemons and user agents. <br>
